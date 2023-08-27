@@ -1,0 +1,191 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CRUD Frontend</title>
+    <style>
+        body {
+            font-family: Georgia, 'Times New Roman', Times, serif, sans-serif, sans-serif;
+            background-color: #dde0b5;
+            margin: 0;
+            padding: 0;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            height: 100vh;
+        }
+
+        .container {
+            background-color: #fff;
+            border-radius: 10px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+            padding: 20px;
+            width: 400px;
+            text-align: center;
+        }
+
+        h1 {
+            color: #155115;
+            font-size: 28px;
+            margin: 0 0 20px;
+        }
+
+        h2 {
+            color: #444;
+            margin: 30px 0 10px;
+        }
+
+        form {
+            margin-top: 10px;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 5px;
+            color: #27633f;
+            font-weight: bold;
+            font-size: 19px;
+        }
+
+        input {
+            width: 100%;
+            padding: 10px;
+            margin-bottom: 10px;
+            border: 1px solid #ddd;
+            border-radius: 3px;
+        }
+
+        button {
+            background-color: #007bff;
+            color: #fff;
+            border: none;
+            border-radius: 3px;
+            padding: 10px 20px;
+            cursor: pointer;
+            font-weight: bold;
+            font-size: 14px;
+        }
+
+        table {
+            width: 77%;
+            border-collapse: collapse;
+            margin-top: 20px;
+            font-size: 23px;
+            color: #155115;
+        }
+
+        th, td {
+            padding: 10px;
+            text-align: left;
+            border-bottom: 1px solid #ddd;
+        }
+
+        th {
+            background-color: #f5f5f5;
+            color: #444;
+        }
+
+    </style>
+</head>
+<body>
+    <h1>CRUD Operations</h1>
+    
+    <h2>Create</h2>
+    <form id="create-form">
+        <label for="name">id:</label>
+        <input type="number" id="id" required>
+        <label for="name">Name:</label>
+        <input type="text" id="name" required>
+        <label for="age">Age:</label>
+        <input type="number" id="age" required>
+        <button type="button" onclick="createEntry()">Create</button>
+    </form>
+    
+    <h2>Read</h2>
+    <table id="results">
+        <tr>
+            <th>ID</th>
+            <th>Name</th>
+            <th>Age</th>
+        </tr>
+    </table>
+    
+    <h2>Update</h2>
+    <form id="update-form">
+        <label for="update-id">ID:</label>
+        <input type="number" id="update-id" required>
+        <label for="new-age">New Age:</label>
+        <input type="number" id="new-age" required>
+        <button type="button" onclick="updateEntry()">Update</button>
+    </form>
+    
+    <h2>Delete</h2>
+    <form id="delete-form">
+        <label for="delete-id">ID:</label>
+        <input type="number" id="delete-id" required>
+        <button type="button" onclick="deleteEntry()">Delete</button>
+    </form>
+    
+    <script>
+        async function fetchData() {
+            const response = await fetch("/read"); // Replace with your backend URL for reading data
+            const data = await response.json();
+            const table = document.getElementById("results");
+            table.innerHTML = `
+                <tr>
+                    <th>ID</th>
+                    <th>Name</th>
+                    <th>Age</th>
+                </tr>
+            `;
+            data.forEach(entry => {
+                const row = table.insertRow();
+                row.innerHTML = `
+                    <td>${entry.id}</td>
+                    <td>${entry.name}</td>
+                    <td>${entry.age}</td>
+                `;
+            });
+        }
+        
+        async function createEntry() {
+            const id = document.getElementById("id").value;
+            const name = document.getElementById("name").value;
+            const age = document.getElementById("age").value;
+            const response = await fetch("/create", {
+                method: "POST", // Replace with the appropriate HTTP method
+                headers: {
+                    "Content-Type": "application/json"
+                },
+                body: JSON.stringify({ id,name,age })
+            });
+            await fetchData();
+        }
+        
+        async function updateEntry() {
+            const id = document.getElementById("update-id").value;
+            const newAge = document.getElementById("new-age").value;
+            const response = await fetch(`/update/${id}`, {
+                method: "PUT", // Replace with the appropriate HTTP method
+                headers: {
+                    "Content-Type": "application/json"
+                },
+                body: JSON.stringify({ newAge })
+            });
+            await fetchData();
+        }
+        
+        async function deleteEntry() {
+            const id = document.getElementById("delete-id").value;
+            const response = await fetch(`/delete/${id}`, {
+                method: "DELETE" // Replace with the appropriate HTTP method
+            });
+            await fetchData();
+        }
+        
+        fetchData();
+    </script>
+</body>
+</html>

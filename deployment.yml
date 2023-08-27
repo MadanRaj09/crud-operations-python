@@ -1,0 +1,40 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: crud-app-deployment
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: crud-app-deployment
+  template:
+    metadata:
+      labels:
+        app: crud-app-deployment
+    spec:
+      containers:
+        - name: crud-app
+          image: madan09/crudopr:latest
+          ports:
+            - containerPort: 5000
+          env:
+            - name: DATABASE_HOST
+              valueFrom:
+                secretKeyRef:
+                  name: db-secret
+                  key: database-host
+            - name: DATABASE_USER
+              valueFrom:
+                secretKeyRef:
+                  name: db-secret
+                  key: database-user
+            - name: DATABASE_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: db-secret
+                  key: database-password
+            - name: DATABASE_NAME
+              valueFrom:
+                secretKeyRef:
+                  name: db-secret
+                  key: database-name
