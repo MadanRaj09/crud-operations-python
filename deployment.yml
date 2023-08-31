@@ -14,7 +14,7 @@ spec:
     spec:
       containers:
         - name: crud-app
-          image: madan09/crudopr:latest
+          image: madan09/crudopr:v1
           ports:
             - containerPort: 5000
           env:
